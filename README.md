@@ -4,7 +4,7 @@ This guide walks you through creating a **VPC** with **one public subnet** (host
 
 ---
 
-# 🌐 AWS VPC Architecture using Terraform  
+#  AWS VPC Architecture using Terraform  
 ### Public Subnet + NAT Gateway + 3 Private Subnets
 
 This project builds a production-ready VPC networking layer on AWS using Terraform.  
