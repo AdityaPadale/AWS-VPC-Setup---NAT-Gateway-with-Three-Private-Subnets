@@ -1,8 +1,62 @@
-# AWS VPC Setup — NAT Gateway with Three Private Subnets
+# AWS VPC Setup — NAT Gateway with Three Private Subnets and with One Public Subnet using Terraform
 
 This guide walks you through creating a **VPC** with **one public subnet** (hosting a NAT Gateway) and **three private subnets**, allowing private instances to access the internet securely through the NAT Gateway.
 
 ---
+
+# 🌐 AWS VPC Architecture using Terraform  
+### Public Subnet + NAT Gateway + 3 Private Subnets
+
+This project builds a production-ready VPC networking layer on AWS using Terraform.  
+The architecture includes one public subnet, three private subnets, a NAT Gateway, and properly configured route tables — a clean and scalable base for any cloud project.
+
+---
+
+##  Architecture Overview
+
+The Terraform code deploys the following resources:
+
+| Component | Quantity | Description |
+|----------|----------|-------------|
+| **VPC** | 1 | Main network boundary (`10.0.0.0/16`) |
+| **Public Subnet** | 1 | Hosts NAT Gateway (`10.0.1.0/24`) |
+| **Private Subnets** | 3 | Backend workloads (`10.0.2.0/24`, `10.0.3.0/24`, `10.0.4.0/24`) |
+| **Internet Gateway** | 1 | Allows public outbound/inbound Internet access |
+| **NAT Gateway** | 1 | Gives private subnets outbound Internet |
+| **Elastic IP** | 1 | Attached to NAT Gateway |
+| **Route Tables** | 2 | Public RT + Private RT |
+| **RT Associations** | 4 | 1 Public + 3 Private |
+
+---
+
+##  High-Level Architecture Diagram
+
+```text
+                    ┌──────────────────────────┐
+                    │         AWS VPC          │
+                    │       10.0.0.0/16        │
+                    └─────────────┬────────────┘
+                                  │
+                    ┌─────────────┴────────────┐
+                    │      Public Subnet        │
+                    │       10.0.1.0/24         │
+                    └─────────────┬────────────┘
+                                  │
+            ┌─────────────────────┼─────────────────────┐
+            │                     │                     │
+        Internet GW        Elastic IP               NAT Gateway
+      (0.0.0.0/0 route)   (domain = vpc)        (gives internet to
+                                                private subnets)
+                                  │
+                    ┌─────────────┴────────────┐
+                    │     Private Route Table   │
+                    │     0.0.0.0/0 → NAT GW    │
+                    └─────────────┬────────────┘
+                  ┌───────────────┼──────────────────────┐
+                  │               │                      │
+      Private Subnet 1   Private Subnet 2     Private Subnet 3
+         10.0.2.0/24        10.0.3.0/24          10.0.4.0/24
+```
 
 ## 1. Create the VPC
 
